@@ -1,0 +1,7 @@
+customer_id,signup_date,country,plan,monthly_spend,last_login_days,support_tickets
+C001,2025-11-10,India,Basic,19.5,2,0
+C002,2025-12-05,India,Pro,49.0,8,1
+C003,2025-12-20,USA,Basic,19.5,45,4
+C004,2026-01-08,UK,Enterprise,120.0,4,0
+C005,2026-01-20,India,Pro,49.0,30,2
+C006,2026-02-14,USA,Basic,19.5,60,5
