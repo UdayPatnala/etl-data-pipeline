@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  # The PostgreSQL database
+  db:
+    image: postgres:15-alpine
+    container_name: etl_postgres
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: etl_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./sql/schema.sql:/docker-entrypoint-initdb.d/schema.sql  # Automatically initializes the schema on first run
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d etl_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # The ETL Pipeline Runner
+  pipeline:
+    build: .
+    container_name: etl_runner
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=postgresql+psycopg2://user:password@db:5432/etl_db
+      - TARGET_TABLE=customer_metrics
+    # Override CMD to run demo or specific pipeline parameters if needed
+    command: python src/pipeline.py --source csv --input data/raw/customers.csv
+    volumes:
+      - ./data:/app/data  # Mount local data folder for CSV extraction
+
+volumes:
+  postgres_data:
